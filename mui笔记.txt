@@ -1,0 +1,148 @@
+----------------------------------------------------------------------------
+body页面的快捷提示
+macc            折叠面板
+mact            h5弹出菜单
+mbad            数字角标
+mbut            按钮
+mche            复选框
+md               mui的dom结构页面
+mform            form表单
+mg               九宫格
+mh               标题栏/带返回箭头的标题栏
+mi               图标
+mi-text          文本框
+mi-text-clear    带清除按钮的输入框
+mi-text-search   搜索框
+mi-text-speech   带语音输入的输入框
+mlist            列表/图文列表
+mn               数字输入框
+mo               侧滑导航
+mpag	        				分页
+mpop             弹出菜单
+mpro             进度条
+mrad             单选框
+mran             滑块
+ms-mgall-tab     图文列表
+ms-mgall         图片轮播
+mscro            区域滚动
+mswit            开关
+ms-slide         轮播组件
+mt		             底部选项卡/div选项卡
+
+-----------------------------------------------------------------------------
+
+**窗口管理
+1、创建子界面(将两个html页面合并成一个页面)
+				mui.init({
+				    subpages:[{
+				      url:'list.html',  //要合并过来的页面
+				      id:'list.html',
+				      styles:{
+				        top:'45px',//mui标题栏默认高度为45px；
+				        bottom:'0px'//默认为0px，可不定义；
+				      }
+				    }]
+				  });
+				  
+				  
+2、打开一个新页面
+		mui.openWindow({
+		    url:new-page-url,
+		    id:new-page-id,
+		    styles:{
+		      top://新页面顶部位置
+		      bottom:新页面底部位置
+		      width:新页面宽度，默认为100%
+		      height:新页面高度，默认为100%
+		    },
+		    extras:{
+		      .....//自定义扩展参数，可以用来处理页面间传值
+		    },
+		    show:{
+		      autoShow:true,//页面loaded事件发生后自动显示，默认为true
+		      aniShow:animationType,//页面显示动画，默认为”slide-in-right“；
+		      duration:animationTime//页面动画持续时间，Android平台默认100毫秒，iOS平台默认200毫秒；
+		    },
+		    waiting:{
+		      autoShow:true,//自动显示等待框，默认为true
+		      title:'正在加载...',//等待对话框上显示的提示内容
+		      options:{
+		        width:waiting-dialog-widht,//等待框背景区域宽度，默认根据内容自动计算合适宽度
+		        height:waiting-dialog-height,//等待框背景区域高度，默认根据内容自动计算合适高度
+		        ......
+		      }
+		    }
+		})
+		
+		
+3、关闭页面(.mui-action-back)
+			若希望在顶部导航栏之外的其它区域添加关闭页面的控件，只需要在对应控件上添加'.mui-action-back'类
+  1)、mui框架封装的页面右滑关闭功能(默认不启用)
+   mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+		2)、mui框架默认会监听Android手机的back按键，然后执行页面关闭逻辑
+			mui.init({
+				keyEventBind: {
+					backbutton: false  //关闭back按键监听
+				}
+			});
+			
+			
+4、页面的预加载
+			所谓的预加载技术就是在用户尚未触发页面跳转时，提前创建目标页面，这样当用户跳转时，就可以立即进行页面切换，节省创建新页面的时间，提升app使用体验。mui提供两种方式实现页面预加载。
+			1）方式一：通过mui.init方法中的preloadPages参数进行配置.(不适用船只页面的时候，推荐使用)
+				mui.init({
+				  preloadPages:[
+				    {
+				      url:预加载的页面,
+				      id:页面的引用,
+				      styles:{},//窗口参数
+				      extras:{},//自定义扩展参数
+				      subpages:[{},{}]//预加载页面的子页面
+				    }
+				  ],
+				  preloadLimit:5//预加载窗口数量限制(一旦超出,先进先出)默认不限制
+				});
+				该方法使用简单、可预加载多个页面，但不会返回预加载每个页面的引用
+			
+			2）方式二：通过mui.preload方法预加载.
+			var page = mui.preload({
+			    url:预加载的页面,
+			    id:页面的引用,
+			    styles:{},//窗口参数
+			    extras:{}//自定义扩展参数
+			});
+			通过mui.preload()方法预加载，可立即返回对应webview的引用，但一次仅能预加载一个页面；若需加载多个webview，则需多次调用mui.preload()方法；
+
+-----------------------------------------------------------------------------
+
+**事件管理
+1、事件绑定(on)
+
+--js中通过mmon触发on事件--
+			mui("点击的对象类名").on("tap","li",执行函数1);   //绑定事件
+			
+2、事件解绑(off)
+
+--js中通过mmoff触发off事件--
+		mui("点击的对象类名").off("tap","li",执行函数1);  //解绑指定事件函数(只解绑当前)
+		mui("点击的对象类名").off("tap","li");    //涉及到的全部对象都解绑
+		
+3、事件触发(trigger)
+
+--js中通过mtrigger触发trigger事件--
+使用mui.trigger()方法可以动态触发特定DOM元素上的事件。
+		btn.addEventListener("tap",function () {
+		  console.log("tap event trigger");
+		});
+		//触发submit按钮的点击事件
+		mui.trigger(btn,'tap');  //自动执行点击事件
+
+4、手势事件
+点击					tap	单击屏幕、doubletap	双击屏幕
+长按					longtap	长按屏幕、hold	按住屏幕、release	离开屏幕
+滑动					swipeleft	向左滑动、swiperight	向右滑动、swipeup	向上滑动、swipedown	向下滑动
+拖动					dragstart	开始拖动、drag	拖动中、dragend	拖动结束
+
+-----------------------------------------------------------------------------
